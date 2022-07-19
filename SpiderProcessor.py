@@ -5,8 +5,12 @@ class SpiderProcessor:
         self.section_url = section_url
         self.content_url = content_url
 
+    def run_proccessor(self):
+        sections = self.get_sections()
     # 获取所有目录id
     def get_sections(self):
+        pass
 
     # 获取内容
-    def get_content(self, section_id):
+    def get_content(self, section_ids):
+        pass
