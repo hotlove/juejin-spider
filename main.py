@@ -1,7 +1,7 @@
 import configparser
 from configparser import ExtendedInterpolation
 
-from SpiderProcessor import SpiderProcessor
+from spider_processor import SpiderProcessor
 
 
 def load_config():
