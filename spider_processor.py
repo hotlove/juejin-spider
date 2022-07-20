@@ -1,4 +1,5 @@
 import requests
+from hyper.contrib import HTTP20Adapter
 import urllib.request
 import urllib.parse
 import json
@@ -59,6 +60,30 @@ class SpiderProcessor:
         print(section_infos)
         return section_infos
 
+    def get_content_post(self, url, data):
+        h = {
+                'authority': 'api.juejin.cn',
+                'method': 'POST',
+                'path': '/booklet_api/v1/section/get?aid=2608&uuid=6971404364696356363',
+                'referer': 'https://juejin.cn/book/7069596046602534919/section/7070419009790803976',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
+                'Accept': '*/*',
+                'cookie': '_ga=GA1.2.360991426.1623156544;MONITOR_WEB_ID=0999e81c-2642-499a-8019-2731b77809ae; __tea_cookie_tokens_2608=%257B%2522web_id%2522%253A%25226971404364696356363%2522%252C%2522ssid%2522%253A%252219d32df5-c911-45fa-bd72-473ad62638fe%2522%252C%2522user_unique_id%2522%253A%25226971404364696356363%2522%252C%2522timestamp%2522%253A1626180142798%257D; n_mh=BV0owX9ixhphmaHMNVQVPonmbSBXtFmvd2f8rcwIUQo; sid_guard=a5d1690b11b175795ad0781137e45aa5%7C1652690627%7C31536000%7CTue%2C+16-May-2023+08%3A43%3A47+GMT; uid_tt=372262f5d6462eef2a4a09648c188301; uid_tt_ss=372262f5d6462eef2a4a09648c188301; sid_tt=a5d1690b11b175795ad0781137e45aa5; sessionid=a5d1690b11b175795ad0781137e45aa5; sessionid_ss=a5d1690b11b175795ad0781137e45aa5; sid_ucp_v1=1.0.0-KDFhMzIyMzg2OTczZjBhMmRmZmNjMWNmMDI3NWFiNWZiODIxZDkxOWQKFwiHq8C-_fXxBxDDnYiUBhiwFDgCQPEHGgJsZiIgYTVkMTY5MGIxMWIxNzU3OTVhZDA3ODExMzdlNDVhYTU; ssid_ucp_v1=1.0.0-KDFhMzIyMzg2OTczZjBhMmRmZmNjMWNmMDI3NWFiNWZiODIxZDkxOWQKFwiHq8C-_fXxBxDDnYiUBhiwFDgCQPEHGgJsZiIgYTVkMTY5MGIxMWIxNzU3OTVhZDA3ODExMzdlNDVhYTU; _tea_utm_cache_6587={%22utm_source%22:%22jj_nav%22}; _gid=GA1.2.1656713202.1658108910; _tea_utm_cache_2608={%22utm_source%22:%22gold_browser_extension%22}'
+            }
+
+        data = urllib.parse.urlencode(data).encode("utf-8")
+
+        request = urllib.request.Request(url=url, data=data, headers=h)
+
+        response = urllib.request.urlopen(request)
+
+        content = response.read().decode('utf-8')
+        print(content)
+
+        res_data = json.loads(content)
+
+        return res_data
+
     # 获取内容
     def get_content(self, section_infos):
         with open(self.book_name.strip('"') + ".html", 'a', encoding="utf-8") as html:
@@ -70,7 +95,8 @@ class SpiderProcessor:
             data = {
                 'section_id': item['section_id']
             }
-            res_data = self.send_post(self.content_url, data)
+            # res_data = self.send_post(self.content_url, data)
+            res_data = self.get_content_post(self.content_url, data)
             print(item['title'], res_data)
             section_info = res_data['data']['section']
 
