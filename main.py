@@ -14,10 +14,12 @@ def load_config():
     uuid = cf.get("juejin", "uuid")
     section_url = cf.get("juejin", "get_section_dir_url")
     content_url = cf.get("juejin", "get_section_content_url")
-    return aid, uuid, section_url, content_url
+    booklet_id = cf.get("juejin", "booklet_id")
+    book_name = cf.get("juejin", "book_name")
+    return aid, uuid, booklet_id, book_name, section_url, content_url
 
 
 if __name__ == '__main__':
-    aid, uuid, section_url, content_url = load_config()
-    spider_proccessor = SpiderProcessor(aid, uuid, section_url, content_url)
+    aid, uuid, booklet_id, book_name, section_url, content_url = load_config()
+    spider_proccessor = SpiderProcessor(aid, uuid, booklet_id, book_name, section_url, content_url)
     spider_proccessor.run_proccessor()

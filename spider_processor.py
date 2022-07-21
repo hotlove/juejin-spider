@@ -13,28 +13,17 @@ headers = {
 
 
 class SpiderProcessor:
-    def __init__(self, aid, uuid, section_url, content_url):
+    def __init__(self, aid, uuid, booklet_id, book_name, section_url, content_url):
         self.aid = aid
         self.uuid = uuid
         self.section_url = section_url
         self.content_url = content_url
-        self.book_name = 'test'
+        self.booklet_id = booklet_id
+        self.book_name = book_name
 
     def send_post(self, url, data):
         urllib3.disable_warnings()
-
         res = requests.post(url=url, json=data, verify=False, headers=headers)
-
-        # data = urllib.parse.urlencode(data).encode("utf-8")
-        #
-        # request = urllib.request.Request(url=url, data=data, headers=headers)
-        #
-        # response = urllib.request.urlopen(request)
-        #
-        # content = response.read().decode('utf-8')
-        #
-        # res_data = json.loads(content)
-
         return res.json()
 
     def run_proccessor(self):
@@ -44,30 +33,36 @@ class SpiderProcessor:
     # 获取所有目录id
     def get_sections(self):
         data = {
-            'booklet_id': '7069596046602534919'
+            'booklet_id': self.booklet_id
         }
         res_data = self.send_post(self.section_url, data)
         section_infos = res_data['data']['sections']
-        print(section_infos)
+
         return section_infos
 
     # 获取内容
     def get_content(self, section_infos):
+
+        book_html_name = "./dist/html/%s.html" % self.book_name
+        with open(book_html_name, 'a', encoding="utf-8") as html:
+            html.writelines('<meta charset="UTF-8">')
 
         for idx, item in enumerate(section_infos):
             data = {
                 'section_id': item['section_id']
             }
 
-            file_html_name = './dist/html/%s.%s.html' % ((idx+1), item['title'])
+            # html文件
+            file_html_name = './dist/html/%s.%s.html' % ((idx + 1), item['title'])
 
-            file_md_name = './dist/md/%s.%s.md' % ((idx+1), item['title'])
+            # markdown 文件
+            file_md_name = './dist/md/%s.%s.md' % ((idx + 1), item['title'])
 
             with open(file_html_name, 'a', encoding="utf-8") as html:
                 html.writelines('<meta charset="UTF-8">')
 
             res_data = self.send_post(self.content_url, data)
-            print(item['title'], res_data)
+
             section_info = res_data['data']['section']
 
             html_content = section_info['content']
@@ -79,3 +74,8 @@ class SpiderProcessor:
 
             with open(file_md_name, 'a', encoding="utf-8") as md_file:
                 md_file.writelines(md_content)
+
+            with open(book_html_name, 'a', encoding="utf-8") as htmlf:
+                htmlf.writelines(html_content)
+
+            print(item['title'], '处理完毕')
