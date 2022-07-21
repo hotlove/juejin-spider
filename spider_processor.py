@@ -1,6 +1,5 @@
 import requests
 import urllib3
-from hyper.contrib import HTTP20Adapter
 import urllib.request
 import urllib.parse
 import json
@@ -11,6 +10,12 @@ headers = {
     'cookie': '_ga=GA1.2.360991426.1623156544; MONITOR_WEB_ID=0999e81c-2642-499a-8019-2731b77809ae; __tea_cookie_tokens_2608=%257B%2522web_id%2522%253A%25226971404364696356363%2522%252C%2522ssid%2522%253A%252219d32df5-c911-45fa-bd72-473ad62638fe%2522%252C%2522user_unique_id%2522%253A%25226971404364696356363%2522%252C%2522timestamp%2522%253A1626180142798%257D; n_mh=BV0owX9ixhphmaHMNVQVPonmbSBXtFmvd2f8rcwIUQo; sid_guard=a5d1690b11b175795ad0781137e45aa5%7C1652690627%7C31536000%7CTue%2C+16-May-2023+08%3A43%3A47+GMT; uid_tt=372262f5d6462eef2a4a09648c188301; uid_tt_ss=372262f5d6462eef2a4a09648c188301; sid_tt=a5d1690b11b175795ad0781137e45aa5; sessionid=a5d1690b11b175795ad0781137e45aa5; sessionid_ss=a5d1690b11b175795ad0781137e45aa5; sid_ucp_v1=1.0.0-KDFhMzIyMzg2OTczZjBhMmRmZmNjMWNmMDI3NWFiNWZiODIxZDkxOWQKFwiHq8C-_fXxBxDDnYiUBhiwFDgCQPEHGgJsZiIgYTVkMTY5MGIxMWIxNzU3OTVhZDA3ODExMzdlNDVhYTU; ssid_ucp_v1=1.0.0-KDFhMzIyMzg2OTczZjBhMmRmZmNjMWNmMDI3NWFiNWZiODIxZDkxOWQKFwiHq8C-_fXxBxDDnYiUBhiwFDgCQPEHGgJsZiIgYTVkMTY5MGIxMWIxNzU3OTVhZDA3ODExMzdlNDVhYTU; _tea_utm_cache_6587={%22utm_source%22:%22jj_nav%22}; _gid=GA1.2.1656713202.1658108910; _tea_utm_cache_2608={%22utm_source%22:%22gold_browser_extension%22}'
 }
 
+hljs_css = '''
+<style>.img{max-width: 1400px;}</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/github-gist.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+<script>console.log('hahha');hljs.initHighlightingOnLoad();</script>
+'''
 
 class SpiderProcessor:
     def __init__(self, aid, uuid, booklet_id, book_name, section_url, content_url):
@@ -59,6 +64,7 @@ class SpiderProcessor:
             file_md_name = './dist/md/%s.%s.md' % ((idx + 1), item['title'])
 
             with open(file_html_name, 'a', encoding="utf-8") as html:
+                html.writelines(hljs_css)
                 html.writelines('<meta charset="UTF-8">')
 
             res_data = self.send_post(self.content_url, data)
