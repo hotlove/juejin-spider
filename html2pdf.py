@@ -3,6 +3,7 @@ import pdfkit
 html_path = './dist/html'
 pdf_path = './dist/pdf'
 
+# 需要更换个人wkhtmltopdf路径
 config = pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe')
 
 src_path_list = []
