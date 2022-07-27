@@ -9,6 +9,7 @@ import chardet
 import misaka
 import requests
 from bs4 import BeautifulSoup
+from urllib3.packages.six import unichr
 
 src_path = "./dist/md"
 dir_path = "./dist/md_local"
@@ -46,6 +47,13 @@ def get_all_md(file_path):
 
     return src_path_list
 
+# 转码
+def transfer_codec(src_str):
+    # ascii 2 unicode
+    ascii_a_utf8 = src_str.encode(encoding='utf-8')
+
+    return ascii_a_utf8.decode("utf8")
+
 
 def get_all_pic_path(md_content):
     """
@@ -55,12 +63,12 @@ def get_all_pic_path(md_content):
     """
     md_render = misaka.Markdown(misaka.HtmlRenderer())
     html = md_render(md_content)
-    soup = BeautifulSoup(html, features='html.parser')
+    soup = BeautifulSoup(html, features='html.parser', from_encoding="utf8")
     pics_list = []
     for img in soup.find_all('img'):
         image_path = img.get('src')
-        c = image_path.encode("utf8")
-        d = str(c, encoding='utf-8')
+        # d = transfer_codec(image_path)
+        d = image_path
         print(type(d))
         print(chardet.detect(bytes(d, 'utf-8')))
         pics_list.append(d)
@@ -104,7 +112,6 @@ def execute_markdow2local():
             print(all_pic_path)
             if len(all_pic_path) > 0:
                 for pic_url in all_pic_path:
-                    s = "颤三"
                     encode = chardet.detect(bytes(pic_url, 'utf-8'))
                     print(encode)
                     if pic_url in md_content:
@@ -122,4 +129,9 @@ def execute_markdow2local():
 
 
 if __name__ == '__main__':
-    execute_markdow2local()
+    # execute_markdow2local()
+    a = "https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bfd978ae6cb4bd09fdcc7e2ce82deab%7Etplv-k3u1fbpfcp-watermark.image?"
+    unicode()
+    b = a.encode('utf8')
+    c = b.decode('utf8')
+    print(chardet.detect(c.encode('utf8')))
