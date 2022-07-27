@@ -114,7 +114,7 @@ def execute_markdow2local():
             with open(file_item['path'], 'w', encoding='utf-8') as new_md_file:
                 new_md_file.write(md_content)
 
-            print(file_item['path'], '处理完毕')
+            print(file_item['path'], '==========> 处理完毕')
 
 
 if __name__ == '__main__':
