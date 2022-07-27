@@ -4,19 +4,20 @@
 import os
 import shutil
 import uuid
+from urllib.parse import unquote
 
 import chardet
 import misaka
 import requests
+
 from bs4 import BeautifulSoup
-from urllib3.packages.six import unichr
 
 src_path = "./dist/md"
 dir_path = "./dist/md_local"
 
 dir_path_img = dir_path + "/image"
 
-
+# 获取文件列表
 def get_files_list(dir):
     """
     获取一个目录下所有文件列表，包括子目录
@@ -47,13 +48,6 @@ def get_all_md(file_path):
 
     return src_path_list
 
-# 转码
-def transfer_codec(src_str):
-    # ascii 2 unicode
-    ascii_a_utf8 = src_str.encode(encoding='utf-8')
-
-    return ascii_a_utf8.decode("utf8")
-
 
 def get_all_pic_path(md_content):
     """
@@ -63,15 +57,11 @@ def get_all_pic_path(md_content):
     """
     md_render = misaka.Markdown(misaka.HtmlRenderer())
     html = md_render(md_content)
-    soup = BeautifulSoup(html, features='html.parser', from_encoding="utf8")
+    soup = BeautifulSoup(html, features='html.parser')
     pics_list = []
     for img in soup.find_all('img'):
-        image_path = img.get('src')
-        # d = transfer_codec(image_path)
-        d = image_path
-        print(type(d))
-        print(chardet.detect(bytes(d, 'utf-8')))
-        pics_list.append(d)
+        image_url = img.get('src')
+        pics_list.append(unquote(image_url))
 
     return pics_list
 
@@ -79,11 +69,16 @@ def get_all_pic_path(md_content):
 # 下载图片
 def download_pic(url):
     img_data = requests.get(url).content
-    new_img_path = os.path.join(dir_path_img, f'{uuid.uuid4().hex}.jpg')
-    with open(new_img_path, 'w+') as f:
+
+    new_img_file_name = f'{uuid.uuid4().hex}.jpg'
+
+    md_img_url = './image/' + new_img_file_name
+
+    img_path = os.path.join(dir_path_img, new_img_file_name)
+    with open(img_path, 'w+') as f:
         f.buffer.write(img_data)
 
-    return new_img_path
+    return md_img_url
 
 
 # 复制文件到新目录下
@@ -93,6 +88,7 @@ def copy_file2local(src_path, dir_path):
         shutil.copyfile(src_path + "/" + file_name, new_path)
 
 
+# 转换md为本地文件
 def execute_markdow2local():
     # 1.复制文件
     copy_file2local(src_path, dir_path)
@@ -109,17 +105,10 @@ def execute_markdow2local():
 
             # 替换图片路径
             all_pic_path = get_all_pic_path(md_content)
-            print(all_pic_path)
             if len(all_pic_path) > 0:
                 for pic_url in all_pic_path:
-                    encode = chardet.detect(bytes(pic_url, 'utf-8'))
-                    print(encode)
-                    if pic_url in md_content:
-                        print('old image', True)
                     new_pic_url = download_pic(pic_url)
                     md_content = md_content.replace(pic_url, new_pic_url)
-                    if new_pic_url in md_content:
-                        print("new image", True)
 
             # 重新写入文件
             with open(file_item['path'], 'w', encoding='utf-8') as new_md_file:
@@ -129,9 +118,4 @@ def execute_markdow2local():
 
 
 if __name__ == '__main__':
-    # execute_markdow2local()
-    a = "https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bfd978ae6cb4bd09fdcc7e2ce82deab%7Etplv-k3u1fbpfcp-watermark.image?"
-    unicode()
-    b = a.encode('utf8')
-    c = b.decode('utf8')
-    print(chardet.detect(c.encode('utf8')))
+    execute_markdow2local()
