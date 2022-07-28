@@ -62,13 +62,15 @@ class SpiderProcessor:
 
     # 获取内容
     def get_content(self, section_infos):
-
         for idx, item in enumerate(section_infos):
             data = {
                 'section_id': item['section_id']
             }
 
-            file_name = item['title'].split(' ')[0]
+            file_name = item['title']
+            file_name = file_name.replace('<', ' ')
+            file_name = file_name.replace('>', ' ')
+
             # html文件
             file_html_name = './dist/html/%s.%s.html' % ((idx + 1), file_name)
 
@@ -91,8 +93,10 @@ class SpiderProcessor:
             with open(file_html_name, 'a', encoding="utf-8") as html_file:
                 html_file.writelines(html_content)
 
-            with open(file_md_name, 'a', encoding="utf-8") as md_file:
-                md_file.writelines(md_content)
+            # md不为空的情况下再去下载md文件
+            if not md_content and len(md_content) > 0:
+                with open(file_md_name, 'a', encoding="utf-8") as md_file:
+                    md_file.writelines(md_content)
 
             print(item['title'], '处理完毕')
 
