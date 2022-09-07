@@ -94,7 +94,7 @@ class SpiderProcessor:
                 html_file.writelines(html_content)
 
             # md不为空的情况下再去下载md文件
-            if not md_content and len(md_content) > 0:
+            if md_content and len(md_content) > 0:
                 with open(file_md_name, 'a', encoding="utf-8") as md_file:
                     md_file.writelines(md_content)
 
