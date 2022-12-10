@@ -17,6 +17,7 @@ dir_path = "./dist/md_local"
 
 dir_path_img = dir_path + "/image"
 
+
 # 获取文件列表
 def get_files_list(dir):
     """
@@ -67,14 +68,18 @@ def get_all_pic_path(md_content):
 
 
 # 下载图片
-def download_pic(url):
+def download_pic(url, path=None):
     img_data = requests.get(url).content
 
     new_img_file_name = f'{uuid.uuid4().hex}.jpg'
 
     md_img_url = './image/' + new_img_file_name
-
     img_path = os.path.join(dir_path_img, new_img_file_name)
+
+    if path != None:
+        img_path = path + "/" + new_img_file_name
+
+
     with open(img_path, 'w+') as f:
         f.buffer.write(img_data)
 
