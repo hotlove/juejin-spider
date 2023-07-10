@@ -60,6 +60,14 @@ class SpiderProcessor:
 
         return section_infos
 
+    def remove_special_character(self, file_name):
+        if "|" in file_name:
+            file_name = file_name.replace("|", "_")
+        if "?" in file_name:
+            file_name = file_name.replace("?", "")
+
+        return file_name
+
     # 获取内容
     def get_content(self, section_infos):
         for idx, item in enumerate(section_infos):
@@ -73,9 +81,11 @@ class SpiderProcessor:
 
             # html文件
             file_html_name = './dist/html/%s.%s.html' % ((idx + 1), file_name)
+            file_html_name = self.remove_special_character(file_html_name)
 
             # markdown 文件
             file_md_name = './dist/md/%s.%s.md' % ((idx + 1), file_name)
+            file_md_name = self.remove_special_character(file_md_name)
 
             with open(file_html_name, 'a', encoding="utf-8") as html:
                 html.writelines(hljs_css)
